@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TRENDPILL SAFE V4</title>
+<style>
+:root{--bg:#0b1020;--card:#121a2d;--muted:#8e9bb7;--text:#f3f6ff;--line:#24304a;--good:#28d17c;--bad:#ff5d73;--warn:#ffbf4a}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:20px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+h1{font-size:21px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:4px}
+.status{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}.dot{width:10px;height:10px;border-radius:50%;background:var(--good);box-shadow:0 0 12px #28d17c}
+main{max-width:1100px;margin:auto;padding:16px;display:grid;gap:14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px}
+.label{font-size:12px;color:var(--muted)}.value{font-size:23px;font-weight:800;margin-top:7px}.small{font-size:12px;color:var(--muted);margin-top:5px}
+.green{color:var(--good)}.red{color:var(--bad)}.yellow{color:var(--warn)}
+.section-title{font-size:14px;font-weight:800;margin-bottom:12px}
+.two{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+.rows{display:grid;gap:8px}.row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:8px 0;font-size:13px}.row:last-child{border-bottom:0}
+.badge{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800;background:#1d2943}
+.controls{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:12px 15px;font-weight:800;cursor:pointer;background:#263452;color:white}.btn.pause{background:#725a1b}.btn.stop{background:#8d2637}.btn:active{transform:scale(.98)}
+.note{font-size:11px;color:var(--muted);line-height:1.5}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.value{font-size:19px}header{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>TRENDPILL SAFE V4</h1><div class="sub">EURUSD • H1 • MT5 control dashboard prototype</div></div>
+  <div class="status"><span class="dot" id="dot"></span><span id="status">ONLINE</span></div>
+</header>
+<main>
+  <div class="grid">
+    <div class="card"><div class="label">ACCOUNT BALANCE</div><div class="value" id="balance">$10,000.00</div></div>
+    <div class="card"><div class="label">EQUITY</div><div class="value" id="equity">$10,042.80</div></div>
+    <div class="card"><div class="label">TODAY P/L</div><div class="value green" id="pnl">+$42.80</div></div>
+    <div class="card"><div class="label">OPEN POSITION</div><div class="value" id="position">NONE</div><div class="small" id="positionDetail">Waiting for MT5 data</div></div>
+  </div>
+
+  <div class="two">
+    <section class="card">
+      <div class="section-title">Signal Monitor</div>
+      <div class="rows">
+        <div class="row"><span>Market trend</span><strong class="green" id="trend">BULLISH</strong></div>
+        <div class="row"><span>EMA 50 / EMA 200</span><strong>1.16842 / 1.16491</strong></div>
+        <div class="row"><span>RSI(14)</span><strong>47.8</strong></div>
+        <div class="row"><span>H4 confirmation</span><strong class="green">BULLISH</strong></div>
+        <div class="row"><span>ADX(14)</span><strong>24.6</strong></div>
+        <div class="row"><span>ATR(14)</span><strong>0.00112</strong></div>
+        <div class="row"><span>Spread</span><strong>8 points</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">Safety Monitor</div>
+      <div class="rows">
+        <div class="row"><span>Risk / trade</span><strong>0.50%</strong></div>
+        <div class="row"><span>Daily loss limit</span><strong>2.00%</strong></div>
+        <div class="row"><span>Consecutive losses</span><strong class="green">0 / 3</strong></div>
+        <div class="row"><span>Max spread</span><strong>25 points</strong></div>
+        <div class="row"><span>Cooldown</span><strong>3 bars</strong></div>
+        <div class="row"><span>Trading hours</span><strong>07:00–20:00</strong></div>
+        <div class="row"><span>Friday cutoff</span><strong>16:00</strong></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="section-title">Robot Controls</div>
+    <div class="controls">
+      <button class="btn" onclick="setStatus('ONLINE')">▶ Enable</button>
+      <button class="btn pause" onclick="setStatus('PAUSED')">Ⅱ Pause New Trades</button>
+      <button class="btn stop" onclick="setStatus('STOPPED')">■ Emergency Stop</button>
+    </div>
+    <p class="note">Prototype controls change the dashboard state only. Live MT5 execution is intentionally not connected yet.</p>
+  </section>
+
+  <section class="card">
+    <div class="section-title">Current Position</div>
+    <div class="rows">
+      <div class="row"><span>Direction</span><strong id="dir">—</strong></div>
+      <div class="row"><span>Entry</span><strong id="entry">—</strong></div>
+      <div class="row"><span>Stop Loss</span><strong id="sl">—</strong></div>
+      <div class="row"><span>Take Profit</span><strong id="tp">—</strong></div>
+      <div class="row"><span>Break-even</span><strong class="badge">ARMED</strong></div>
+      <div class="row"><span>Trailing stop</span><strong class="badge">OFF</strong></div>
+    </div>
+  </section>
+
+  <p class="note">Strategy parameters displayed here mirror the supplied TRENDPILL_BOT_SAFE_V4.mq5: EMA 50/200, RSI 14, H4 confirmation, ADX 14 ≥ 20, ATR-based 1.5× SL / 2.5× TP, 0.5% risk, 2% daily loss limit, 3-loss limit, one-position rule, 3-bar cooldown, spread ≤25 points, 07:00–20:00 trading window and Friday cutoff at 16:00. The EA source also manages break-even at 1.0× ATR with a 0.10× ATR lock.</p>
+</main>
+<script>
+function setStatus(s){
+  const el=document.getElementById('status'), dot=document.getElementById('dot');
+  el.textContent=s;
+  if(s==='ONLINE'){dot.style.background='var(--good)';dot.style.boxShadow='0 0 12px #28d17c'}
+  else if(s==='PAUSED'){dot.style.background='var(--warn)';dot.style.boxShadow='0 0 12px #ffbf4a'}
+  else {dot.style.background='var(--bad)';dot.style.boxShadow='0 0 12px #ff5d73'}
+}
+</script>
+</body>
+</html>
